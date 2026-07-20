@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "a2a-documentation": {
+      "command": "uv",
+      "args": ["run", "mcp-a2a-documentation"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install git for cloning the upstream documentation repository
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.11.29 /uv /usr/local/bin/uv
+
+# Copy project files
+COPY pyproject.toml README.md ./
+COPY src/ src/
+COPY data/ data/
+
+# Install dependencies
+RUN uv sync --no-dev
+
+# Build the index at container build time
+RUN uv run a2a-docs-index index
+
+# Run the MCP server
+CMD ["uv", "run", "mcp-a2a-documentation"]
