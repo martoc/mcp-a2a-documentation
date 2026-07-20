@@ -163,6 +163,19 @@ def test_search_with_source_filter() -> None:
         assert len(no_results) == 0
 
 
+def test_search_with_malformed_query_returns_empty_list() -> None:
+    """Test that a syntactically invalid FTS5 query is handled gracefully."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        db_path = Path(temp_dir) / "test.db"
+        db = DocumentDatabase(db_path)
+
+        doc = _make_doc(path="a2a/topics/overview.md", content="A2A overview")
+        db.upsert_document(doc)
+
+        results = db.search('"unclosed quote')
+        assert results == []
+
+
 def test_get_document_not_found() -> None:
     """Test getting a non-existent document."""
     with tempfile.TemporaryDirectory() as temp_dir:

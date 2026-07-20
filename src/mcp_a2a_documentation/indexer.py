@@ -26,6 +26,8 @@ class DocsSource:
 class A2ADocsIndexer:
     """Indexes A2A protocol documentation from GitHub."""
 
+    CLONE_TIMEOUT_SECONDS: ClassVar[int] = 300
+
     SOURCES: ClassVar[tuple[DocsSource, ...]] = (
         DocsSource(
             name="a2a",
@@ -118,7 +120,7 @@ class A2ADocsIndexer:
         cmd.extend(["--branch", branch, source.repo_url, str(target_path)])
 
         logger.info("Cloning %s (%s)...", source.name, source.repo_url)
-        subprocess.run(cmd, check=True, capture_output=True)  # noqa: S603
+        subprocess.run(cmd, check=True, capture_output=True, timeout=self.CLONE_TIMEOUT_SECONDS)  # noqa: S603
 
         if shallow:
             logger.info("Setting up sparse checkout for %s...", source.name)
@@ -126,6 +128,7 @@ class A2ADocsIndexer:
                 ["git", "-C", str(target_path), "sparse-checkout", "set", *source.sparse_paths],  # noqa: S607
                 check=True,
                 capture_output=True,
+                timeout=self.CLONE_TIMEOUT_SECONDS,
             )
 
         logger.info("Repository %s cloned successfully", source.name)

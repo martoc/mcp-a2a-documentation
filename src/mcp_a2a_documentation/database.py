@@ -1,11 +1,14 @@
 """SQLite FTS5 database operations for A2A protocol documentation."""
 
+import logging
 import sqlite3
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 
 from mcp_a2a_documentation.models import Document, SearchResult
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentDatabase:
@@ -151,7 +154,12 @@ class DocumentDatabase:
             sql += " ORDER BY score LIMIT ?"
             params.append(limit)
 
-            cursor = conn.execute(sql, params)
+            try:
+                cursor = conn.execute(sql, params)
+            except sqlite3.OperationalError as exc:
+                logger.warning("FTS5 query error for %r: %s", query, exc)
+                return []
+
             results = []
             for row in cursor.fetchall():
                 results.append(

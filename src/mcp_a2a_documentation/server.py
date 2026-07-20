@@ -8,8 +8,6 @@ from fastmcp import FastMCP
 
 from mcp_a2a_documentation.database import DocumentDatabase
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Default database path
@@ -168,6 +166,7 @@ def read_documentation(path: str) -> str:
 
 def run_server() -> None:
     """Run the MCP server with STDIO transport."""
+    logging.basicConfig(level=logging.INFO)
     mcp.run(transport="stdio")
 
 

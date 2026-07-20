@@ -1,11 +1,14 @@
 """Parser for A2A protocol documentation markdown files."""
 
+import logging
 import re
 from pathlib import Path
 
 import frontmatter
 
 from mcp_a2a_documentation.models import Document, DocumentMetadata
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentParser:
@@ -47,7 +50,8 @@ class DocumentParser:
                 url=url,
                 source=source,
             )
-        except Exception:
+        except Exception as exc:
+            logger.warning("Failed to parse %s: %s", file_path, exc)
             return None
 
     def _extract_metadata(self, metadata: dict[str, object], file_path: Path) -> DocumentMetadata:
