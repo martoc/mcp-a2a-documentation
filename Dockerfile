@@ -26,6 +26,10 @@ RUN uv sync --locked --no-dev
 # Build the index at container build time
 RUN uv run --no-sync a2a-docs-index index
 
+# Exposed for HTTP transport (MCP_TRANSPORT=http); unused for the default
+# stdio transport
+EXPOSE 8000
+
 # Run the MCP server directly from the baked venv so no dependency
 # resolution happens on container start
 CMD ["/app/.venv/bin/mcp-a2a-documentation"]
